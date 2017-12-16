@@ -5,10 +5,7 @@ By default, the training script uses the Wikitext-2 dataset, provided.
 The trained model can then be used by the generate script to generate new text.
 
 ```bash
-python main.py --cuda --epochs 6        # Train a LSTM on Wikitext-2 with CUDA, reaching perplexity of 117.61
-python main.py --cuda --epochs 6 --tied # Train a tied LSTM on Wikitext-2 with CUDA, reaching perplexity of 110.44
-python main.py --cuda --tied            # Train a tied LSTM on Wikitext-2 with CUDA for 40 epochs, reaching perplexity of 87.17
-python generate.py                      # Generate samples from the trained LSTM model.
+python main.py with model_type=RNN_TANH lr=0.2 nhid=150 nlayers=1 bptt=20 dropout=0.5 save=rnn_01.pt emsize=250 tied=False epochs=3
 ```
 
 The model uses the `nn.RNN` module (and its sister modules `nn.GRU` and `nn.LSTM`)
@@ -20,35 +17,26 @@ training is stopped and the current model is evaluated against the test dataset.
 The `main.py` script accepts the following arguments:
 
 ```bash
-optional arguments:
-  -h, --help         show this help message and exit
-  --data DATA        location of the data corpus
-  --model MODEL      type of recurrent net (RNN_TANH, RNN_RELU, LSTM, GRU)
-  --emsize EMSIZE    size of word embeddings
-  --nhid NHID        number of hidden units per layer
-  --nlayers NLAYERS  number of layers
-  --lr LR            initial learning rate
-  --clip CLIP        gradient clipping
-  --epochs EPOCHS    upper epoch limit
-  --batch-size N     batch size
-  --bptt BPTT        sequence length
-  --dropout DROPOUT  dropout applied to layers (0 = no dropout)
-  --decay DECAY      learning rate decay per epoch
-  --tied             tie the word embedding and softmax weights
-  --seed SEED        random seed
-  --cuda             use CUDA
-  --log-interval N   report interval
-  --save SAVE        path to save the final model
-```
-
-With these arguments, a variety of models can be tested.
-As an example, the following arguments produce slower but better models:
-
-```bash
-python main.py --cuda --emsize 650 --nhid 650 --dropout 0.5 --epochs 40           # Test perplexity of 80.97
-python main.py --cuda --emsize 650 --nhid 650 --dropout 0.5 --epochs 40 --tied    # Test perplexity of 75.96
-python main.py --cuda --emsize 1500 --nhid 1500 --dropout 0.65 --epochs 40        # Test perplexity of 77.42
-python main.py --cuda --emsize 1500 --nhid 1500 --dropout 0.65 --epochs 40 --tied # Test perplexity of 72.30
+$ python main.py print_config
+INFO - main - Running command 'print_config'
+INFO - main - Started
+Configuration (modified, added, typechanged, doc):
+  batch_size = 32                    # batch size
+  bptt = 35                          # sequence length
+  clip = 0.25                        # gradient clipping
+  dataset = './data'                 # location of the data corpus
+  dropout = 0.2                      # dropout applied to layers (0 = no dropout)
+  emsize = 200                       # size of word embeddings
+  epochs = 40                        # upper epoch limit
+  log_interval = 200                 # report interval
+  lr = 20.0                          # initial learning rate
+  model_type = 'LSTM'                # type of recurrent net (RNN_TANH, RNN_RELU, LSTM, GRU)
+  nhid = 200                         # number of hidden units per layer
+  nlayers = 2                        # number of layers
+  save = 'model.pt'                  # path to save the final model
+  seed = 257                         # the random seed for this experiment
+  tied = True                        # tie the word embedding and softmax weights
+INFO - main - Completed after 0:00:00
 ```
 
 Perplexities on PTB are equal or better than
